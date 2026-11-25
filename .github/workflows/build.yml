@@ -8,8 +8,6 @@ on:
     - cron: '17 3 * * 1'
 permissions:
   contents: read
-env:
-  IMAGE: ghcr.io/mayanksekhar/zulu-distroless
 jobs:
   image:
     runs-on: ubuntu-latest
@@ -17,6 +15,18 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - vendor: zulu
+            major: '25'
+            full: 25.0.5.1
+            release: zulu25.38.201-ca-jre25.0.5.1
+            sha_amd64: 12277af4957cd249dc7aa50017ddde967a826fa48971b2411752fefe48e5ca8b
+            sha_arm64: 164c7293bc17dcd21e56f84778cacfe57501a66c7ad3265b7f9f36c4cd9ec1e0
+    env:
+      IMAGE: ghcr.io/mayanksekhar/distroless-java/${{ matrix.vendor }}
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
@@ -28,6 +38,10 @@ jobs:
           platforms: linux/amd64
           load: true
           tags: scan:local
+          build-args: |
+            ZULU=${{ matrix.release }}
+            SHA_AMD64=${{ matrix.sha_amd64 }}
+            SHA_ARM64=${{ matrix.sha_arm64 }}
       - name: Smoke test
         run: docker run --rm scan:local -version
       - name: Trivy gate
@@ -50,8 +64,8 @@ jobs:
         with:
           images: ${{ env.IMAGE }}
           tags: |
-            type=raw,value=25,enable={{is_default_branch}}
-            type=raw,value=25.0.5.1,enable={{is_default_branch}}
+            type=raw,value=${{ matrix.major }},enable={{is_default_branch}}
+            type=raw,value=${{ matrix.full }},enable={{is_default_branch}}
             type=ref,event=tag
       - name: Build and push multi arch
         id: push
@@ -65,6 +79,10 @@ jobs:
           sbom: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            ZULU=${{ matrix.release }}
+            SHA_AMD64=${{ matrix.sha_amd64 }}
+            SHA_ARM64=${{ matrix.sha_arm64 }}
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3

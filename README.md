@@ -1,33 +1,40 @@
-# zulu-distroless
+# distroless-java
 
-Unofficial distroless image for the Zulu OpenJDK 25 JRE, built in response to
-AzulSystems/azul-zulu-images issue 1.
+Signed, multi arch distroless Java runtime images, built from vendor binaries
+that are verified against published checksums. The first image is the Zulu JRE
+25, created in response to AzulSystems/azul-zulu-images issue 1.
 
-This project is not affiliated with or endorsed by Azul. Zulu is a trademark of
-Azul Systems. The Dockerfile in this repository is BSD 3 Clause. The image
-contains the Zulu JRE, which is licensed by its upstream authors (GPLv2 with
-the Classpath Exception).
+These images are unofficial and not affiliated with or endorsed by Azul. Zulu
+is a trademark of Azul Systems. The files in this repository are BSD 3 Clause.
+The images contain the vendor JRE, which is licensed by its upstream authors
+(GPLv2 with the Classpath Exception).
 
-## What it is
+## Images
 
-- Zulu JRE 25 from cdn.azul.com, pinned to one release and verified against
-  the SHA256 that Azul publishes through its metadata API
-- Base: gcr.io/distroless/cc-debian13:nonroot (no shell, no package manager)
-- Runs as uid 65532
-- Platforms: linux/amd64 and linux/arm64
-- Every build runs a Trivy gate, produces an SBOM and provenance attestation,
-  and is signed with keyless Cosign
+| Image | Tags | Platforms |
+| --- | --- | --- |
+| ghcr.io/mayanksekhar/distroless-java/zulu | 25, 25.0.5.1 | linux/amd64, linux/arm64 |
+
+Base is gcr.io/distroless/cc-debian13:nonroot. There is no shell and no package
+manager, and the process runs as uid 65532. Every build runs a smoke test and a
+Trivy gate, produces an SBOM and provenance attestation, and is signed with
+keyless Cosign. A scheduled rebuild runs weekly.
 
 ## Use
 
-    docker run --rm ghcr.io/mayanksekhar/zulu-distroless:25 -version
+    docker run --rm ghcr.io/mayanksekhar/distroless-java/zulu:25 -version
 
-    FROM ghcr.io/mayanksekhar/zulu-distroless:25
+    FROM ghcr.io/mayanksekhar/distroless-java/zulu:25
     COPY app.jar /app/app.jar
     CMD ["-jar", "/app/app.jar"]
 
 ## Verify
 
-    cosign verify ghcr.io/mayanksekhar/zulu-distroless:25 \
-      --certificate-identity-regexp 'https://github.com/mayanksekhar/zulu-distroless/' \
+    cosign verify ghcr.io/mayanksekhar/distroless-java/zulu:25 \
+      --certificate-identity-regexp 'https://github.com/mayanksekhar/distroless-java/' \
       --certificate-oidc-issuer https://token.actions.githubusercontent.com
+
+## Request an image
+
+Open an issue with the vendor, the Java major version and the variant you need.
+New images are added to the build matrix in .github/workflows/build.yml.
