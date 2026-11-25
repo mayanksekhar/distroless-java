@@ -47,3 +47,20 @@ licensed under GPLv2 with the Classpath Exception. The license notices ship in
 https://github.com/openjdk/jdk and Azul's terms are at
 https://www.azul.com/products/core/openjdk-terms-of-use/. This is not legal
 advice, so check the terms for your own use.
+
+## Sanity checks
+
+Run on 2026-11-25 against ghcr.io/mayanksekhar/distroless-java/zulu:25 from a
+clean anonymous pull:
+
+- Runs Zulu 25.0.5.1, default user 65532, no shell in the image
+- linux/amd64 and linux/arm64 in the manifest, with SBOM and provenance
+  attestations attached
+- Cosign signature verifies against this repository's workflow identity
+- Trivy reports no HIGH or CRITICAL findings that have a fix. One inherited
+  base image finding is suppressed until 2026-12-09, see .trivyignore
+- A real Java program runs as nonroot with working crypto and TLS
+- The pinned JRE SHA256 values match the values Azul publishes
+- The arm64 image is executed in CI on every build
+
+Rerun the checks with scripts/sanity.sh.
