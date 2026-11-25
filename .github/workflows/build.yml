@@ -84,6 +84,9 @@ jobs:
             ZULU=${{ matrix.release }}
             SHA_AMD64=${{ matrix.sha_amd64 }}
             SHA_ARM64=${{ matrix.sha_arm64 }}
+      - name: Smoke test arm64 from the registry
+        if: github.event_name != 'pull_request'
+        run: docker run --rm --platform linux/arm64 "${IMAGE}@${{ steps.push.outputs.digest }}" -version
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3
