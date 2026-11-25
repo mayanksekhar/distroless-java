@@ -38,3 +38,12 @@ keyless Cosign. A scheduled rebuild runs weekly.
 
 Open an issue with the vendor, the Java major version and the variant you need.
 New images are added to the build matrix in .github/workflows/build.yml.
+
+## Licensing and source
+
+The JRE is Azul's Community Availability build of Zulu, based on OpenJDK and
+licensed under GPLv2 with the Classpath Exception. The license notices ship in
+/opt/java/legal inside the image. OpenJDK source is at
+https://github.com/openjdk/jdk and Azul's terms are at
+https://www.azul.com/products/core/openjdk-terms-of-use/. This is not legal
+advice, so check the terms for your own use.
