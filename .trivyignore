@@ -1,0 +1,5 @@
+# libzstd1 in the gcr.io/distroless/cc-debian13 base image, not installed by this repo.
+# Verified 2026-11-25: no library in the Zulu JRE links against libzstd, and the same
+# finding appears on the bare base image. Fix exists (1.5.7+dfsg-1+deb13u1) and lands
+# when distroless rebuilds. The weekly rebuild picks it up. Entry expires on its own.
+CVE-2026-124851 exp:2026-12-09
